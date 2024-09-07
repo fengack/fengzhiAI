@@ -1,0 +1,144 @@
+spring:
+  application:
+    name: fengzhi-backend
+  # 默认 dev 环境
+  profiles:
+    active: dev
+  # 支持 swagger3
+    pathmatch:
+      matching-strategy: ant_path_matcher
+      
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://###
+    username: ###
+    password: ###
+    
+  # 分库分表配置
+  shardingsphere:
+    #数据源配置
+    datasource:
+      # 多数据源以逗号隔开即可
+      names: ###
+      ###:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://###
+        username: ###
+        password: ###
+    # 规则配置
+    rules:
+      sharding:
+        # 分片算法配置
+        sharding-algorithms:
+          # 自定义分片规则名
+          answer-table-inline:
+            ## inline 类型是简单的配置文件里面就能写的类型，其他还有自定义类等等
+            type: INLINE
+            props:
+              algorithm-expression: user_answer_$->{appId % 2}
+        tables:
+          user_answer:
+            actual-data-nodes: ###.user_answer_$->{0..1}
+            # 分表策略
+            table-strategy:
+              standard:
+                sharding-column: ###
+                sharding-algorithm-name: answer-table-inline
+                
+  # Redis 配置
+  redis:
+    host: ###
+    database: ###
+    port: ###
+    password: ###
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+        
+  #RabbitMQ 配置
+  rabbitmq:
+    host: ###
+    port: ###
+    username: ###
+    password: ###
+    virtual-host: ###
+    listener:
+      simple:
+        acknowledge-mode: manual
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          multiplier: 1
+          max-attempts: 2
+          stateless: true
+
+  # 文件上传
+  servlet:
+    multipart:
+      # 大小限制
+      max-file-size: 10MB
+  # 配置日期格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+server:
+  address: 0.0.0.0
+  port: 8080
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+# 线程池配置
+myai:
+  threadpool:
+    core-pool-size: 2
+    maximum-pool-size: 4
+    keep-alive-time: 60
+    queue-size: 20
+  jwt:
+    secret-key: ###
+    ttl: 300000
+    token-name: Authorization
+  fronted:
+    port: http://###
+
+
+# 对象存储
+# todo 需替换配置
+cos:
+  client:
+    accessKey: ###
+    secretKey: ###
+    region: ###
+    bucket: ###
+# AI 配置
+# 科大讯飞星火模型
+xunfei:
+  client:
+    api-key: ###
+    api-secret: ###
+    appid: ###
+# 智普 AI
+ai:
+  apiKey: ###
+
+
